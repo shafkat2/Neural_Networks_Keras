@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\shafkat\\AppData\\Local\\Programs\\Python\\Python36\\python.exe"
+    "python.pythonPath": "deep_learning\\Scripts\\python.exe",
+    "python.linting.pylintEnabled": true
 }
