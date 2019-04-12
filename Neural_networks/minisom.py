@@ -1,3 +1,5 @@
+import math
+
 from math import sqrt
 
 from numpy import (array, unravel_index, nditer, linalg, random, subtract,

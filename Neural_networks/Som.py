@@ -45,5 +45,5 @@ for i,c in enumerate(X):
 show()
 #finding the frauds
 mappings = som.win_map(X)
-frauds = np.concatenate(mappings[(8,1)],mappings[(6,8)],0)
+frauds = np.concatenate((mappings[(8,1)],mappings[(6,8)]),axis = 0)
 frauds = sc.inverse_transform(frauds)
