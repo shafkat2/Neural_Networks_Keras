@@ -70,6 +70,55 @@ class RBM():
         p_v_given_h = torch.sigmoid(activation)
         return  p_v_given_h, torch.bernoulli(p_v_given_h)
     def train(self,v0, vk, ph0, phk):
-         self.W += torch.mm(v0.t(),ph0)-torch.mm(vk.t(),phk) 
+         self.W += (torch.mm(v0.t(), ph0) - torch.mm(vk.t(), phk)).t()
          self.b += torch.sum((v0-vk),0)
          self.a += torch.sum((ph0 - phk),0)
+
+nv = len(training_set[0])
+nh = 100
+
+batch_size = 100
+
+rmb = RBM(nv,nh)
+
+#training the RMB
+
+nb_epoch = 10
+
+for epoch in range(1,nb_epoch + 1):
+    train_loss = 0
+    s = 0.0
+    for id_user in range(0,nb_user - batch_size, batch_size):
+        vk = training_set[id_user:id_user+batch_size]
+        v0 = training_set[id_user:id_user+batch_size]
+        ph0,_ = rmb.sample_h(v0)
+        for k in range(10):
+            _,hk = rmb.sample_h(vk)
+            _,vk = rmb.sample_v(hk)
+            vk[v0<0] = v0[v0<0]
+        phk,_ = rmb.sample_h(vk)
+        rmb.train(v0,vk,ph0,phk)
+        train_loss += torch.mean(torch.abs(v0[v0>=0] - vk[v0>=0]))
+        s += 1.0
+    print("number of epoch: "+str(epoch)+" loss: "+str(train_loss/s) )
+
+
+#testing the RBM
+
+
+
+train_loss = 0
+s = 0.0
+for id_user in range(0,nb_user):
+     v = test_set[id_user:id_user+1]
+     vt = test_set[id_user:id_user+1]
+     ph0,_ = rmb.sample_h(v0)
+     for k in range(10):
+         _,hk = rmb.sample_h(vk)
+         _,vk = rmb.sample_v(hk)
+         vk[v0<0] = v0[v0<0]
+     phk,_ = rmb.sample_h(vk)
+     rmb.train(v0,vk,ph0,phk)
+     train_loss += torch.mean(torch.abs(v0[v0>=0] - vk[v0>=0]))
+     s += 1.0
+print("number of epoch: "+str(epoch)+" loss: "+str(train_loss/s) )
