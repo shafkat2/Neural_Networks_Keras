@@ -107,18 +107,17 @@ for epoch in range(1,nb_epoch + 1):
 
 
 
-train_loss = 0
+test_loss = 0
 s = 0.0
 for id_user in range(0,nb_user):
-     v = test_set[id_user:id_user+1]
+     v = training_set_toarray[id_user:id_user+1]
      vt = test_set[id_user:id_user+1]
-     ph0,_ = rmb.sample_h(v0)
-     for k in range(10):
-         _,hk = rmb.sample_h(vk)
-         _,vk = rmb.sample_v(hk)
-         vk[v0<0] = v0[v0<0]
-     phk,_ = rmb.sample_h(vk)
-     rmb.train(v0,vk,ph0,phk)
-     train_loss += torch.mean(torch.abs(v0[v0>=0] - vk[v0>=0]))
-     s += 1.0
-print("number of epoch: "+str(epoch)+" loss: "+str(train_loss/s) )
+     if( len(vt[vt >=0]) > 0):
+         _,h = rmb.sample_h(v)
+         _,v = rmb.sample_v(h)
+         test_loss += torch.mean(torch.abs(vt[vt>=0] - v[vt>=0]))
+         s += 1.0
+         
+print("loss: "+str(test_loss/s) )
+
+
