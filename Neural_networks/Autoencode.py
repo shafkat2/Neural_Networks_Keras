@@ -36,7 +36,7 @@ training_set_to_list  = convert(training_set_toarray )
 test_set_to_list  = convert(test_set_toarray )
 
 #coverting data into tensor
-training_set = torch.Tensor(training_set_to_list)
+training_set = torch.FloatTensor(training_set_to_list)
 test_set = torch.FloatTensor(test_set_to_list)
 
 #creating the architecures of the neural netowrk
@@ -48,3 +48,27 @@ class SAE(nn.Module):
         self.fc3 = nn.Linear(10,20)
         self.fc4 = nn.Linear(20,nb_movies)
         self.activation = nn.Sigmoid()
+
+    def forward(self,x):
+        x = self.activation(self.fc1(x))
+        x = self.activation(self.fc2(x))
+        x = self.activation(self.fc3(x))
+        x = self.fc4(x)
+        return x
+
+sae = SAE()
+criterion = nn.MSELoss()
+optimizer = optim.RMSprop(sae.parameters(),lr = 0.01,weight_decay = 0.5)
+
+#training the SAE
+
+nb_epoch = 200
+
+for epoch in range(1,nb_epoch+1):
+    train_loss = 0
+    s = 0.0
+    for id_user in range(nb_user):
+        input = Variable(training_set[id_user]).unsqueeze(0)
+        target = input.clone()
+        if torch.sum(target.data > 0) >0:
+            output = sae(input)
