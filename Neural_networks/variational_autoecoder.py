@@ -16,9 +16,25 @@ class ConVAE(object):
             if not gpu_mode:
                 with tf.device('/cpu:0'):
                     tf.logging.info('Model using cpu.')
-                    self._buil_graph()
+                    self._build_graph()
             else:
                 tf.logging.info('Model using gpu.')
                 self._build_graph()
         self._init_session()
+
+    # making a method that creates the vae mode architecture iteself
+    def _build_graph(self):
+        self.g = tf.Graph()
+        with self.g.as_default():
+            self.x = tf.placeholder(tf.float32,shape = [None,64,64,3])
+            #building the encoder part
+            h = tf.layers.conv2d(self.x,32,4,strides =2,activation = tf.nn.relu, name = "enc_conv1")
+            h = tf.layers.conv2d(h,64,4,strides =2,activation = tf.nn.relu, name = "enc_conv2")
+            h = tf.layers.conv2d(self.x,128,4,strides =2,activation = tf.nn.relu, name = "enc_conv3")
+            h = tf.layers.conv2d(self.x,256,4,strides =2,activation = tf.nn.relu, name = "enc_conv4")
+            h = tf.reshape(h,[-1,2*2*256])
+
+
+
+
 
